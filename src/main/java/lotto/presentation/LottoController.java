@@ -1,12 +1,15 @@
 package lotto.presentation;
 
 import camp.nextstep.edu.missionutils.Console;
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 import lotto.application.LottoService;
 import lotto.domain.LottoResult;
-import lotto.domain.LottoStatistic;
+import lotto.domain.LottoReward;
 import lotto.domain.RewardConfiguration;
 import lotto.domain.Ticket;
+
 
 public class LottoController {
     private final LottoService lottoService;
@@ -56,13 +59,52 @@ public class LottoController {
         }
     }
 
-    private void printOneStatisticEntry(LottoResult lottoResult, Long count) {
-        System.out.println(RewardConfiguration.getReward(lottoResult) + "원 - " + count + "개");
+    private String formatInteger(int number) {
+        DecimalFormat decimalFormat = new DecimalFormat("###,###");
+        return decimalFormat.format(number);
     }
+
+    private String formatDouble(double number) {
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.##%");
+        return decimalFormat.format(number);
+    }
+
+    private void printOneStatisticEntry(LottoResult lottoResult, Long count) {
+        String matchText = "%d개 일치";
+        if (lottoResult.isBonusMatch()) {
+            matchText += ", 보너스 볼 일치";
+        }
+        matchText = matchText.formatted(lottoResult.matchNumbers());
+
+        String oneEntryFormat = "%s (%s원) - %s개";
+        System.out.println(oneEntryFormat.formatted(
+                matchText,
+                formatInteger(RewardConfiguration.getReward(lottoResult)),
+                formatInteger(count.intValue())
+        ));
+    }
+
+    private void printStatistic(Map<LottoResult, Long> lottoStatistic) {
+        for (var entry : RewardConfiguration.values()) {
+            printOneStatisticEntry(entry.lottoResult, lottoStatistic.getOrDefault(entry.lottoResult, 0L));
+        }
+    }
+
+    private void printReward(LottoReward lottoReward) {
+        int rewardSum = lottoReward.claim();
+        int investment = lottoService.getInvestment();
+        System.out.printf("총 수익률은 %s입니다.%n", formatDouble((double) rewardSum / investment));
+    }
+
     private void printResult() {
+        lottoService.checkLottoStatistic();
+
         System.out.println("당첨 통계");
         System.out.println("---");
-        LottoStatistic lottoStatistic = lottoService.getLottoStatistic();
+
+        printStatistic(lottoService.getLottoStatictic());
+
+        printReward(lottoService.getLottoReward());
     }
 
     public void run() {
