@@ -9,7 +9,7 @@ public enum RewardConfiguration {
     FOURTH(new LottoResult(4, false), 50000),
     FIFTH(new LottoResult(3, false), 5000);
 
-    private final LottoResult lottoResult;
+    public final LottoResult lottoResult;
     private final int reward;
 
     RewardConfiguration(LottoResult lottoResult, int reward) {
