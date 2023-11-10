@@ -1,6 +1,7 @@
 package lotto.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 import lotto.domain.DrawResult;
 import lotto.domain.LottoChecker;
@@ -63,7 +64,6 @@ public class LottoService {
         try {
             return Integer.parseInt(bonusNumber);
         } catch (NumberFormatException e) {
-            System.out.println("[ERROR}]][}{}{{");
             throw new IllegalArgumentException("[ERROR] 보너스 번호는 숫자만 입력 가능합니다.");
         }
     }
@@ -76,14 +76,21 @@ public class LottoService {
         lottoChecker = new LottoChecker(tickets, drawResult);
     }
 
-    public LottoStatistic getLottoStatistic() {
+    public void checkLottoStatistic() {
         List<LottoResult> lottoResults = lottoChecker.checkTickets();
         lottoStatistic = new LottoStatistic(lottoResults);
-        return lottoStatistic;
+    }
+
+    public Map<LottoResult, Long> getLottoStatistic() {
+        return lottoStatistic.getLottoStatistic();
     }
 
     public LottoReward getLottoReward() {
         lottoReward = new LottoReward(lottoStatistic);
         return lottoReward;
+    }
+
+    public int getInvestment() {
+        return tickets.size() * LOTTO_PRICE;
     }
 }

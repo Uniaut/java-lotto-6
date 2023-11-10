@@ -102,7 +102,7 @@ public class LottoController {
         System.out.println("당첨 통계");
         System.out.println("---");
 
-        printStatistic(lottoService.getLottoStatictic());
+        printStatistic(lottoService.getLottoStatistic());
 
         printReward(lottoService.getLottoReward());
     }
